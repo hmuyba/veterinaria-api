@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(nvm list:*)",
+      "Bash(export PATH=\"/c/Users/Harold/AppData/Local/nvm/v22.19.0:$PATH\")"
+    ]
+  }
+}
