@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsDateString,
   IsOptional,
   IsString,
   IsUUID,
@@ -26,6 +27,11 @@ export class CreateClinicalRecordDto {
   @IsOptional()
   @IsString()
   observaciones?: string;
+
+  @ApiPropertyOptional({ example: '2026-03-20T14:30:00.000Z', description: 'Fecha de la consulta. Si no se envía, se usa la fecha actual.' })
+  @IsOptional()
+  @IsDateString()
+  fecha?: string;
 
   @ApiPropertyOptional({ type: [CreateTreatmentDto] })
   @IsOptional()

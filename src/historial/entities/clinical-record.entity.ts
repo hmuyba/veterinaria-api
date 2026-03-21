@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -29,7 +28,7 @@ export class ClinicalRecord {
   @JoinColumn({ name: 'clinic_id' })
   clinic: Clinic | null;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', default: () => 'NOW()' })
   fecha: Date;
 
   @Column()

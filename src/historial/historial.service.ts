@@ -40,6 +40,7 @@ export class HistorialService {
       motivo: dto.motivo,
       diagnostico: dto.diagnostico,
       observaciones: dto.observaciones,
+      ...(dto.fecha && { fecha: new Date(dto.fecha) }),
     });
 
     const saved = await this.recordsRepo.save(record);
