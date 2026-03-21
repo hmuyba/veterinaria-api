@@ -103,8 +103,12 @@ export class AuthService implements OnModuleInit {
       clinic,
     });
 
-    await this.usersRepo.save(user);
-    return { message: 'Usuario registrado correctamente', id: user.id };
+    const saved = await this.usersRepo.save(user);
+
+    const fullUser = await this.usersRepo.findOneOrFail({ where: { id: saved.id } });
+    const tokens = this.generateTokens(fullUser);
+    await this.saveRefreshToken(fullUser, tokens.refresh_token);
+    return tokens;
   }
 
   async createVet(dto: CreateVetDto) {

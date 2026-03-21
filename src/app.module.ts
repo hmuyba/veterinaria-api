@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ClinicsModule } from './clinics/clinics.module';
+import { UsersModule } from './users/users.module';
 import { HistorialModule } from './historial/historial.module';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
@@ -13,6 +14,7 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
   imports: [
     AuthModule,
     ClinicsModule,
+    UsersModule,
     PacientesModule,
     HistorialModule,
     VacunacionModule,
