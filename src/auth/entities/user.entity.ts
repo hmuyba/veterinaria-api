@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Clinic } from '../../clinics/entities/clinic.entity';
 import { Role } from './role.entity';
 
 @Entity('users')
@@ -17,6 +18,10 @@ export class User {
   @ManyToOne(() => Role, { eager: true })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @ManyToOne(() => Clinic, { eager: true, nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'clinic_id' })
+  clinic: Clinic | null;
 
   @Column({ unique: true })
   email: string;

@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Clinic } from '../../clinics/entities/clinic.entity';
 import { User } from '../../auth/entities/user.entity';
 import { Pet } from '../../pacientes/entities/pet.entity';
 import { Treatment } from './treatment.entity';
@@ -23,6 +24,10 @@ export class ClinicalRecord {
   @ManyToOne(() => User, { eager: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'veterinario_id' })
   veterinario: User;
+
+  @ManyToOne(() => Clinic, { eager: false, nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'clinic_id' })
+  clinic: Clinic | null;
 
   @CreateDateColumn()
   fecha: Date;

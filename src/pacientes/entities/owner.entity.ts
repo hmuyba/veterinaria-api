@@ -2,10 +2,12 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Clinic } from '../../clinics/entities/clinic.entity';
 import { User } from '../../auth/entities/user.entity';
 import { Pet } from './pet.entity';
 
@@ -17,6 +19,10 @@ export class Owner {
   @OneToOne(() => User, { eager: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => Clinic, { eager: false, nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'clinic_id' })
+  clinic: Clinic | null;
 
   @Column({ nullable: true })
   direccion: string;

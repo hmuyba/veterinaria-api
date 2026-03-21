@@ -36,6 +36,7 @@ export class HistorialService {
     const record = this.recordsRepo.create({
       pet,
       veterinario,
+      clinic: veterinario.clinic,
       motivo: dto.motivo,
       diagnostico: dto.diagnostico,
       observaciones: dto.observaciones,
@@ -56,9 +57,13 @@ export class HistorialService {
   async findByPet(petId: string, user: User): Promise<ClinicalRecord[]> {
     const pet = await this.petsRepo.findOne({
       where: { id: petId },
-      relations: ['owner', 'owner.user'],
+      relations: ['owner', 'owner.user', 'clinic'],
     });
     if (!pet) throw new NotFoundException('Mascota no encontrada');
+
+    if (user.role.nombre !== RoleName.SUPER_ADMIN) {
+      if (pet.clinic?.id !== user.clinic?.id) throw new ForbiddenException();
+    }
 
     if (user.role.nombre === RoleName.PROPIETARIO) {
       this.assertOwnership(pet, user);
@@ -80,9 +85,14 @@ export class HistorialService {
         'pet',
         'pet.owner',
         'pet.owner.user',
+        'clinic',
       ],
     });
     if (!record) throw new NotFoundException('Consulta clínica no encontrada');
+
+    if (user.role.nombre !== RoleName.SUPER_ADMIN) {
+      if (record.clinic?.id !== user.clinic?.id) throw new ForbiddenException();
+    }
 
     if (user.role.nombre === RoleName.PROPIETARIO) {
       this.assertOwnership(record.pet, user);

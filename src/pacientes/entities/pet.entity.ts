@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Clinic } from '../../clinics/entities/clinic.entity';
 import { Owner } from './owner.entity';
 
 export enum Especie {
@@ -26,6 +27,10 @@ export class Pet {
   @ManyToOne(() => Owner, (owner) => owner.pets, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'owner_id' })
   owner: Owner;
+
+  @ManyToOne(() => Clinic, { eager: false, nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'clinic_id' })
+  clinic: Clinic | null;
 
   @Column()
   nombre: string;

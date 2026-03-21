@@ -4,14 +4,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ClinicsModule } from './clinics/clinics.module';
 import { HistorialModule } from './historial/historial.module';
 import { PacientesModule } from './pacientes/pacientes.module';
+import { VacunacionModule } from './vacunacion/vacunacion.module';
 
 @Module({
   imports: [
     AuthModule,
+    ClinicsModule,
     PacientesModule,
     HistorialModule,
+    VacunacionModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

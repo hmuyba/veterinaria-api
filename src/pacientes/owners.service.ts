@@ -25,21 +25,31 @@ export class OwnersService {
       throw new ConflictException('El usuario ya tiene un perfil de propietario');
     }
 
-    const owner = this.ownersRepo.create({ ...dto, user });
+    const owner = this.ownersRepo.create({ ...dto, user, clinic: user.clinic });
     return this.ownersRepo.save(owner);
   }
 
-  findAll(): Promise<Owner[]> {
-    return this.ownersRepo.find({ relations: ['user', 'pets'] });
+  findAll(user: User): Promise<Owner[]> {
+    if (user.role.nombre === RoleName.SUPER_ADMIN) {
+      return this.ownersRepo.find({ relations: ['user', 'pets', 'clinic'] });
+    }
+    return this.ownersRepo.find({
+      where: { clinic: { id: user.clinic?.id } },
+      relations: ['user', 'pets'],
+    });
   }
 
   async findOne(id: string, user: User): Promise<Owner> {
     const owner = await this.ownersRepo.findOne({
       where: { id },
-      relations: ['user', 'pets'],
+      relations: ['user', 'pets', 'clinic'],
     });
 
     if (!owner) throw new NotFoundException('Propietario no encontrado');
+
+    if (user.role.nombre === RoleName.SUPER_ADMIN) return owner;
+
+    if (owner.clinic?.id !== user.clinic?.id) throw new ForbiddenException();
 
     if (
       user.role.nombre === RoleName.PROPIETARIO &&

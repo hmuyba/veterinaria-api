@@ -22,6 +22,7 @@ export class PetsService {
   async create(dto: CreatePetDto): Promise<Pet> {
     const owner = await this.ownersRepo.findOne({
       where: { id: dto.owner_id },
+      relations: ['clinic'],
     });
     if (!owner) throw new NotFoundException('Propietario no encontrado');
 
@@ -33,16 +34,25 @@ export class PetsService {
       fecha_nac: dto.fecha_nac ? new Date(dto.fecha_nac) : undefined,
       peso: dto.peso,
       owner,
+      clinic: owner.clinic,
     });
 
     return this.petsRepo.save(pet);
   }
 
   async findAll(user: User): Promise<Pet[]> {
-    if (user.role.nombre === RoleName.VETERINARIO) {
-      return this.petsRepo.find({ relations: ['owner', 'owner.user'] });
+    if (user.role.nombre === RoleName.SUPER_ADMIN) {
+      return this.petsRepo.find({ relations: ['owner', 'owner.user', 'clinic'] });
     }
 
+    if (user.role.nombre === RoleName.VETERINARIO) {
+      return this.petsRepo.find({
+        where: { clinic: { id: user.clinic?.id } },
+        relations: ['owner', 'owner.user'],
+      });
+    }
+
+    // PROPIETARIO: solo sus mascotas
     const owner = await this.ownersRepo.findOne({
       where: { user: { id: user.id } },
     });
@@ -57,10 +67,14 @@ export class PetsService {
   async findOne(id: string, user: User): Promise<Pet> {
     const pet = await this.petsRepo.findOne({
       where: { id },
-      relations: ['owner', 'owner.user'],
+      relations: ['owner', 'owner.user', 'clinic'],
     });
 
     if (!pet) throw new NotFoundException('Mascota no encontrada');
+
+    if (user.role.nombre === RoleName.SUPER_ADMIN) return pet;
+
+    if (pet.clinic?.id !== user.clinic?.id) throw new ForbiddenException();
 
     if (
       user.role.nombre === RoleName.PROPIETARIO &&

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run:*)",
       "Bash(nvm list:*)",
-      "Bash(export PATH=\"/c/Users/Harold/AppData/Local/nvm/v22.19.0:$PATH\")"
+      "Bash(export PATH=\"/c/Users/Harold/AppData/Local/nvm/v22.19.0:$PATH\")",
+      "Bash(npm install:*)",
+      "Bash(timeout 15 node dist/main.js)"
     ]
   }
 }

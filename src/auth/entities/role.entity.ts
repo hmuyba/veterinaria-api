@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
 export enum RoleName {
+  SUPER_ADMIN = 'SUPER_ADMIN',
   VETERINARIO = 'VETERINARIO',
   PROPIETARIO = 'PROPIETARIO',
 }
