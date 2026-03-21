@@ -29,14 +29,29 @@ export class OwnersService {
     return this.ownersRepo.save(owner);
   }
 
-  findAll(user: User): Promise<Owner[]> {
-    if (user.role.nombre === RoleName.SUPER_ADMIN) {
-      return this.ownersRepo.find({ relations: ['user', 'pets', 'clinic'] });
+  findAll(user: User, search?: string): Promise<Owner[]> {
+    const qb = this.ownersRepo
+      .createQueryBuilder('owner')
+      .leftJoinAndSelect('owner.user', 'u')
+      .leftJoinAndSelect('owner.pets', 'pets')
+      .leftJoinAndSelect('owner.clinic', 'clinic');
+
+    if (user.role.nombre === RoleName.PROPIETARIO) {
+      qb.where('u.id = :userId', { userId: user.id });
+    } else if (user.role.nombre === RoleName.VETERINARIO) {
+      qb.where('owner.clinic_id = :clinicId', { clinicId: user.clinic?.id });
     }
-    return this.ownersRepo.find({
-      where: { clinic: { id: user.clinic?.id } },
-      relations: ['user', 'pets'],
-    });
+    // SUPER_ADMIN: sin filtro de clínica
+
+    if (search) {
+      const term = `%${search.toLowerCase()}%`;
+      qb.andWhere(
+        'LOWER(u.nombre) LIKE :term OR LOWER(u.email) LIKE :term OR LOWER(u.telefono) LIKE :term',
+        { term },
+      );
+    }
+
+    return qb.orderBy('u.nombre', 'ASC').getMany();
   }
 
   async findOne(id: string, user: User): Promise<Owner> {

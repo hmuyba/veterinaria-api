@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { Clinic } from '../clinics/entities/clinic.entity';
+import { Owner } from '../pacientes/entities/owner.entity';
 import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -17,7 +18,7 @@ export { Roles, JwtAuthGuard, RolesGuard };
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Clinic]),
+    TypeOrmModule.forFeature([User, Role, Clinic, Owner]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

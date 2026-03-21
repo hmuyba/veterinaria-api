@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Clinic } from '../clinics/entities/clinic.entity';
+import { Owner } from '../pacientes/entities/owner.entity';
 import { CreateVetDto } from './dto/create-vet.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -23,6 +24,7 @@ export class AuthService implements OnModuleInit {
     @InjectRepository(User) private usersRepo: Repository<User>,
     @InjectRepository(Role) private rolesRepo: Repository<Role>,
     @InjectRepository(Clinic) private clinicsRepo: Repository<Clinic>,
+    @InjectRepository(Owner) private ownersRepo: Repository<Owner>,
     private jwtService: JwtService,
     private config: ConfigService,
   ) {}
@@ -108,6 +110,8 @@ export class AuthService implements OnModuleInit {
     });
 
     const saved = await this.usersRepo.save(user);
+
+    await this.ownersRepo.save(this.ownersRepo.create({ user: saved, clinic }));
 
     const fullUser = await this.usersRepo.findOneOrFail({ where: { id: saved.id } });
     const tokens = this.generateTokens(fullUser);

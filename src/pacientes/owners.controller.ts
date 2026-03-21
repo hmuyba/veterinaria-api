@@ -4,9 +4,10 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleName } from '../auth/entities/role.entity';
@@ -24,7 +25,9 @@ export class OwnersController {
   constructor(private readonly ownersService: OwnersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear perfil de propietario vinculado al usuario autenticado' })
+  @UseGuards(RolesGuard)
+  @Roles(RoleName.PROPIETARIO)
+  @ApiOperation({ summary: 'Completar perfil de propietario (solo PROPIETARIO)' })
   @ApiResponse({ status: 201, description: 'Propietario creado' })
   @ApiResponse({ status: 409, description: 'El usuario ya tiene un perfil de propietario' })
   create(@CurrentUser() user: User, @Body() dto: CreateOwnerDto) {
@@ -33,12 +36,13 @@ export class OwnersController {
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles(RoleName.VETERINARIO)
-  @ApiOperation({ summary: 'Listar todos los propietarios con sus mascotas (solo VETERINARIO)' })
+  @Roles(RoleName.VETERINARIO, RoleName.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Listar propietarios. VETERINARIO ve su clínica; SUPER_ADMIN ve todos.' })
+  @ApiQuery({ name: 'search', required: false, description: 'Filtro parcial por nombre, email o teléfono' })
   @ApiResponse({ status: 200, description: 'Lista de propietarios' })
   @ApiResponse({ status: 403, description: 'Acceso denegado' })
-  findAll(@CurrentUser() user: User) {
-    return this.ownersService.findAll(user);
+  findAll(@CurrentUser() user: User, @Query('search') search?: string) {
+    return this.ownersService.findAll(user, search);
   }
 
   @Get(':id')

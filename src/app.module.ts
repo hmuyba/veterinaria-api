@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 import { ClinicsModule } from './clinics/clinics.module';
 import { UsersModule } from './users/users.module';
 import { HistorialModule } from './historial/historial.module';
@@ -15,6 +16,7 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
     AuthModule,
     ClinicsModule,
     UsersModule,
+    SeedModule,
     PacientesModule,
     HistorialModule,
     VacunacionModule,
