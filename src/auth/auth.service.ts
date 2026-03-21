@@ -80,6 +80,10 @@ export class AuthService implements OnModuleInit {
     );
   }
 
+  async getProfile(userId: string): Promise<User> {
+    return this.usersRepo.findOneOrFail({ where: { id: userId } });
+  }
+
   async register(dto: RegisterDto) {
     const exists = await this.usersRepo.findOne({ where: { email: dto.email } });
     if (exists) throw new BadRequestException('El email ya está registrado');

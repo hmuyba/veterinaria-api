@@ -1,8 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
 import { Roles } from './decorators/roles.decorator';
 import { RoleName } from './entities/role.entity';
+import { User } from './entities/user.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { CreateVetDto } from './dto/create-vet.dto';
@@ -39,6 +41,16 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Refresh token inválido o expirado' })
   refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refresh(dto);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
+  @ApiResponse({ status: 200, description: 'Perfil del usuario con rol y clínica' })
+  @ApiResponse({ status: 401, description: 'Token inválido o expirado' })
+  getProfile(@CurrentUser() user: User) {
+    return this.authService.getProfile(user.id);
   }
 
   @Post('create-vet')
